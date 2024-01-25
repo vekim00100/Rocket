@@ -9,7 +9,7 @@ class Play extends Phaser.Scene {
 
         // green UI background
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0, 0)
-        
+            
         // white borders
         this.add.rectangle(0, 0, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0)
         this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0)
@@ -23,7 +23,7 @@ class Play extends Phaser.Scene {
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0, 30).setOrigin(0, 0)
         this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0,0)
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship', 0, 10).setOrigin(0,0)
-        
+            
         // define keys
         keyFIRE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
         keyRESET = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
@@ -53,23 +53,23 @@ class Play extends Phaser.Scene {
 
         // 60-second play clock
         scoreConfig.fixedWidth = 0
-        this.clock = this.time.delayedCall(60000, () => {
+        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5)
-            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart', scoreConfig).setOrigin(0.5)
+            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5)
             this.gameOver = true
         }, null, this)
     }
 
     update() {
         // check key input for restart
-        if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyRESET)) {
-            this.scene.restart()
+        if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            this.scene.start("menuScene")
         }
 
         this.starfield.tilePositionX -= 4
     
         if(!this.gameOver) {
-            this.p1Rocket.update        // update rocket sprite
+            this.p1Rocket.update()        // update rocket sprite
             this.ship01.update()        // update spaceships (x3)
             this.ship02.update()
             this.ship03.update()
@@ -106,7 +106,7 @@ class Play extends Phaser.Scene {
         // temporaily hide ship
         ship.alpha = 0
         // create explosions sprite at ship's position
-        let boom = this.add.sprite(ship.x, shipy.y, 'explosion').setOrigin(0,0);
+        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
         boom.anims.play('explode')             // play explode animation
         boom.on('animationcomplete', () => {   // callback after anim completes
             ship.reset()                         // reset ship position
